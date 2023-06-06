@@ -58,8 +58,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassMethods = classType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                            !m.IsSpecialName)
+                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName) //Ignoring methods inherited from object & getters/setters
                 .ToList();
             if (allClassMethods.Count == 0)
                 return 0;
@@ -81,8 +80,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassMethods = classType
                     .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                                !m.IsSpecialName)
+                    .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)//Ignoring methods inherited from object & getters/setters
                     .ToList();
 
                 var inheritedMethodsCount = allClassMethods
@@ -103,8 +101,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassMethods = classType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                            !m.IsSpecialName)
+                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName) //Ignoring methods inherited from object & getters/setters
                 .ToList();
 
             var visibleMethodsCount = allClassMethods
@@ -124,8 +121,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassMethods = classType
                     .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                                !m.IsSpecialName)
+                    .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)//Ignoring methods inherited from object & getters/setters
                     .ToList();
 
                 allClassesMethodsCount += allClassMethods.Count;
@@ -146,9 +142,9 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassProperties = classType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object
-                            !m.IsSpecialName)
+                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)//Ignoring methods inherited from object
                 .ToList();
+
             if (allClassProperties.Count == 0)
                 return 0;
 
@@ -201,7 +197,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
                 var propertyGetterIsPublic = property.GetMethod?.IsPublic ?? false;
                 var propertySetterIsPublic = property.SetMethod?.IsPublic ?? false;
 
-                // Assuming that eother the setter or getter being public is enough for public visibility
+                // Assuming that either the setter or getter being public is enough for public visibility
                 if (propertyGetterIsPublic || propertySetterIsPublic)
                     visiblePropertiesCount++;
             }
@@ -249,8 +245,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassMethods = classType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                            !m.IsSpecialName &&
+                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName && //Ignoring methods inherited from object & getters/setters
                             (m.IsPublic || (!m.IsPublic && !m.IsPrivate))) //Forcing to only retrieve the overridable methods - public and protected
                 .ToList();
 
@@ -283,8 +278,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassMethods = classType
                     .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                                !m.IsSpecialName &&
+                    .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName && //Ignoring methods inherited from object & getters/setters
                                 (m.IsPublic || (!m.IsPublic && !m.IsPrivate))) //Forcing to only retrieve the overridable methods - public and protected
                         .ToList();
                 double newMethodCount = 0;
@@ -310,7 +304,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             var depthOfInheritance = 1;
             var currentClass = classType;
 
-            while (currentClass.BaseType.Name != "Object")
+            while (currentClass.BaseType!.Name != "Object")
             {
                 depthOfInheritance++;
                 currentClass = currentClass.BaseType;
