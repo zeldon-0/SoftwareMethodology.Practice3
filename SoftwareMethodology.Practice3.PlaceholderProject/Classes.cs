@@ -2,6 +2,7 @@
 {
     public class ClassA
     {
+        public string FieldA1; 
         public virtual int PropertyA1 { get; set; }
         public string PropertyA2 { get; set; }
         private string _propertyA3 { get; set; }
@@ -24,6 +25,7 @@
 
     public class ClassB : ClassA
     {
+        public new string FieldA1;
         public override int PropertyA1 { get; set; }
         protected string PropertyB1 { get; set; }
 
@@ -41,6 +43,7 @@
     public class ClassC : ClassB
     {
         public new int PropertyA2 { get; set; }
+        private string _fieldC1;
 
         public new string DoStuffA2()
         {

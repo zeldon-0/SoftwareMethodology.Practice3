@@ -151,16 +151,28 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             var inheritedPropertiesCount = allClassProperties
                 .Count(m => m.DeclaringType != classType);
 
-            return inheritedPropertiesCount / (double)allClassProperties.Count;
+            var allClassFields = classType
+                .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
+                .Where(f => !f.Name.EndsWith("_BackingField"))
+                .ToList();
+
+            if (allClassFields.Count == 0)
+                return 0;
+
+            var inheritedFieldsCount = allClassFields
+                .Count(m => m.DeclaringType != classType);
+
+            return (inheritedPropertiesCount + inheritedFieldsCount) / (double)(allClassProperties.Count + allClassFields.Count);
+
         }
 
         public double CalculateLibraryAttributeInheritance()
         {
             var allClassTypes = _libraryLoader.GetAllTypes();
 
-            double allClassesPropertyCount = 0;
-            double allInheritedPropertyCount = 0;
-
+            double allClassesAttributeCount = 0;
+            double allInheritedAttributeCount = 0;
+            
             foreach (var classType in allClassTypes)
             {
                 var allClassProperties = classType
@@ -172,69 +184,99 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
                 var inheritedPropertyCount = allClassProperties
                     .Count(m => m.DeclaringType != classType);
 
-                allClassesPropertyCount += allClassProperties.Count;
-                allInheritedPropertyCount += inheritedPropertyCount;
+                allClassesAttributeCount += allClassProperties.Count;
+                allInheritedAttributeCount += inheritedPropertyCount; 
+                
+                var allClassFields = classType
+                    .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(f => !f.Name.EndsWith("_BackingField"))
+                    .ToList();
+
+                var inheritedFieldsCount = allClassFields
+                    .Count(m => m.DeclaringType != classType);
+
+                allClassesAttributeCount += allClassFields.Count;
+                allInheritedAttributeCount += inheritedFieldsCount;
             }
 
-            return allInheritedPropertyCount / allClassesPropertyCount;
+            return allInheritedAttributeCount / allClassesAttributeCount;
         }
 
-        public double CalculateClassPropertyHidingFactor(string className)
+        public double CalculateClassAttributeHidingFactor(string className)
         {
             var classType = _libraryLoader.GetTypeByName(className);
             if (classType == null)
                 throw new Exception("No such class in the library!");
 
-            var allClassProperties = classType
+            var allClassDefinedProperties = classType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                            !m.IsSpecialName)
+                .Where(p => !p.IsSpecialName && p.DeclaringType == classType)
                 .ToList();
 
-            var visiblePropertiesCount = 0;
-            foreach (var property in allClassProperties)
+            var hiddenAttributesCount = 0;
+            foreach (var property in allClassDefinedProperties)
             {
                 var propertyGetterIsPublic = property.GetMethod?.IsPublic ?? false;
                 var propertySetterIsPublic = property.SetMethod?.IsPublic ?? false;
 
                 // Assuming that either the setter or getter being public is enough for public visibility
-                if (propertyGetterIsPublic || propertySetterIsPublic)
-                    visiblePropertiesCount++;
+                if (!propertyGetterIsPublic && !propertySetterIsPublic)
+                    hiddenAttributesCount++;
             }
 
-            return 1 - visiblePropertiesCount / (double)allClassProperties.Count;
+            var allClassDefinedFields = classType
+                .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
+                .Where(f => !f.Name.EndsWith("_BackingField") && f.DeclaringType == classType)
+                .ToList();
+
+            var hiddenFieldsCount = allClassDefinedFields
+                .Count(f => !f.IsPublic);
+            hiddenAttributesCount += hiddenFieldsCount;
+
+            var allAttributesCount = allClassDefinedProperties.Count + allClassDefinedFields.Count;
+
+            return hiddenAttributesCount / (double)allAttributesCount;
         }
 
 
-        public double CalculateLibraryPropertyHidingFactor()
+        public double CalculateLibraryAttributeHidingFactor()
         {
             var allClassTypes = _libraryLoader.GetAllTypes();
 
-            double allClassesPropertiesCount = 0;
-            double allVisiblePropertiesCount = 0;
+            double allClassesAttributesCount = 0;
+            double allHiddenAttributesCount = 0;
 
             foreach (var classType in allClassTypes)
             {
-                var allClassProperties = classType
+                var allClassDefinedProperties = classType
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                                !m.IsSpecialName)
+                    .Where(p =>  !p.IsSpecialName && p.DeclaringType == classType)
                     .ToList();
 
-                allClassesPropertiesCount += allClassProperties.Count;
-                foreach (var property in allClassProperties)
+                allClassesAttributesCount += allClassDefinedProperties.Count;
+                foreach (var property in allClassDefinedProperties)
                 {
                     var propertyGetterIsPublic = property.GetMethod?.IsPublic ?? false;
                     var propertySetterIsPublic = property.SetMethod?.IsPublic ?? false;
 
                     // Assuming that eother the setter or getter being public is enough for public visibility
-                    if (propertyGetterIsPublic || propertySetterIsPublic)
-                        allVisiblePropertiesCount++;
+                    if (!propertyGetterIsPublic && !propertySetterIsPublic)
+                        allHiddenAttributesCount++;
                 }
 
+                var allClassDefinedFields = classType
+                    .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(f => !f.Name.EndsWith("_BackingField") && f.DeclaringType == classType)
+                    .ToList();
+
+                allClassesAttributesCount += allClassDefinedFields.Count;
+
+                var hiddenFieldsCount = allClassDefinedFields
+                    .Count(f => !f.IsPublic);
+                allHiddenAttributesCount += hiddenFieldsCount;
             }
 
-            return 1 - allVisiblePropertiesCount / allClassesPropertiesCount;
+            return allHiddenAttributesCount / allClassesAttributesCount;
         }
 
         public double CalculateClassPolymorphismFactor(string className)

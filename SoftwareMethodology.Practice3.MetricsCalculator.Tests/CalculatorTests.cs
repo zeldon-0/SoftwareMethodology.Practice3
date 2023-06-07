@@ -135,7 +135,7 @@ public class CalculatorTests
     public void CalculateLibraryPropertyInheritance_should_return_ratio_of_inherited_properties_to_ones_defined_in_entire_project()
     {
         // Arrange
-        var expectedPropertyInheritanceFactor = (double)7 / 15;
+        var expectedPropertyInheritanceFactor = (double)12 / 23;
 
         // Act
         var actualPropertyInheritanceFactor = _calculator.CalculateLibraryAttributeInheritance();
@@ -145,26 +145,26 @@ public class CalculatorTests
     }
 
     [Theory]
-    [MemberData(nameof(CalculateClassPropertyHidingFactorData))]
-    public void CalculateClassPropertyHidingFactor_should_return_ratio_of_hidden_properties_in_class(
+    [MemberData(nameof(CalculateClassAttributeHidingFactorData))]
+    public void CalculateClassPropertyHidingFactor_should_return_ratio_of_hidden_attributes_in_class(
         string className,
         double expectedPropertyHidingFactor)
     {
         // Act
-        var actualPropertyHidingFactor = _calculator.CalculateClassPropertyHidingFactor(className);
+        var actualPropertyHidingFactor = _calculator.CalculateClassAttributeHidingFactor(className);
 
         // Assert
         actualPropertyHidingFactor.Should().BeApproximately(expectedPropertyHidingFactor, 1e-5);
     }
 
     [Fact]
-    public void CalculateLibraryPropertyHidingFactor_should_return_ratio_of_hidden_properties_in_library()
+    public void CalculateLibraryPropertyHidingFactor_should_return_ratio_of_hidden_attributes_in_library()
     {
         // Arrange
-        var expectedPropertyHidingFactor = (double)1 / 3;
+        var expectedPropertyHidingFactor = (double)4 / 11;
 
         // Act
-        var actualPropertyHidingFactor = _calculator.CalculateLibraryPropertyHidingFactor();
+        var actualPropertyHidingFactor = _calculator.CalculateLibraryAttributeHidingFactor();
 
         // Assert
         actualPropertyHidingFactor.Should().BeApproximately(expectedPropertyHidingFactor, 1e-5);
@@ -230,17 +230,17 @@ public class CalculatorTests
     public static IEnumerable<object[]> CalculateClassAttributeInheritanceData()
     {
         yield return new object[] { "ClassA", 0 };
-        yield return new object[] { "ClassB", (double)1 / 3 };
-        yield return new object[] { "ClassC", (double)3 / 4 };
-        yield return new object[] { "ClassD", (double)3 / 5 };
+        yield return new object[] { "ClassB", (double)2 / 5 };
+        yield return new object[] { "ClassC", (double)5 / 7 };
+        yield return new object[] { "ClassD", (double)5 / 7 };
     }
 
-    public static IEnumerable<object[]> CalculateClassPropertyHidingFactorData()
+    public static IEnumerable<object[]> CalculateClassAttributeHidingFactorData()
     {
-        yield return new object[] { "ClassA", (double)1 / 3 };
+        yield return new object[] { "ClassA", (double)1 / 4 };
         yield return new object[] { "ClassB", (double)1 / 3 };
-        yield return new object[] { "ClassC", (double)1 / 4 };
-        yield return new object[] { "ClassD", (double)2 / 5 };
+        yield return new object[] { "ClassC", (double)1 / 2 };
+        yield return new object[] { "ClassD", (double)1 / 2 };
     }
     public static IEnumerable<object[]> CalculateClassPolymorphismFactorData()
     {

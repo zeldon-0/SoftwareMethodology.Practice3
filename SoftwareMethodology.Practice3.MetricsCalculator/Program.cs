@@ -7,7 +7,7 @@ Console.WriteLine($"The project Depth of Inheritance is:{calculator.CalculateLib
 Console.WriteLine($"The project Method Inheritance Factor is:{calculator.CalculateLibraryMethodInheritance()}");
 Console.WriteLine($"The project Method Hiding Factor is:{calculator.CalculateLibraryMethodHidingFactor()}");
 Console.WriteLine($"The project Attribute Inheritance Factor is:{calculator.CalculateLibraryAttributeInheritance()}");
-Console.WriteLine($"The project Attribute Hiding Factor is:{calculator.CalculateLibraryPropertyHidingFactor()}");
+Console.WriteLine($"The project Attribute Hiding Factor is:{calculator.CalculateLibraryAttributeHidingFactor()}");
 Console.WriteLine($"The project Polymorphism Factor is:{calculator.CalculateLibraryPolymorphismFactor()}");
 Console.WriteLine("You may also choose to view the following class-specific metrics: DOI, NOC, MIF, MHF, AHF, AIF and POF.");
 while (true)
@@ -37,7 +37,7 @@ while (true)
             Console.WriteLine($"The Attribute Inheritance Factor for {className} is:{calculator.CalculateClassAttributeInheritance(className)}");
             break;
         case "aif":
-            Console.WriteLine($"The Attribute Hiding Factor for {className} is:{calculator.CalculateClassPropertyHidingFactor(className)}");
+            Console.WriteLine($"The Attribute Hiding Factor for {className} is:{calculator.CalculateClassAttributeHidingFactor(className)}");
             break;
         case "pof":
             Console.WriteLine($"The Polymorphism Factor for {className} is:{calculator.CalculateClassPolymorphismFactor(className)}");
