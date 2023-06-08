@@ -10,6 +10,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 {
     public class Calculator
     {
+        private const string BackingFieldNameSuffix = "_BackingField";
         private readonly LibraryLoader _libraryLoader;
 
         public Calculator()
@@ -58,7 +59,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassMethods = classType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName) //Ignoring methods inherited from object & getters/setters
+                .Where(method => method.DeclaringType != typeof(object) && !method.IsSpecialName) //Ignoring methods inherited from object & getters/setters
                 .ToList();
             if (allClassMethods.Count == 0)
                 return 0;
@@ -80,7 +81,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassMethods = classType
                     .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)//Ignoring methods inherited from object & getters/setters
+                    .Where(method => method.DeclaringType != typeof(object) && !method.IsSpecialName)//Ignoring methods inherited from object & getters/setters
                     .ToList();
 
                 var inheritedMethodsCount = allClassMethods
@@ -101,11 +102,11 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassMethods = classType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName) //Ignoring methods inherited from object & getters/setters
+                .Where(method => method.DeclaringType != typeof(object) && !method.IsSpecialName) //Ignoring methods inherited from object & getters/setters
                 .ToList();
 
             var visibleMethodsCount = allClassMethods
-                .Count(m => m.IsPublic);
+                .Count(method => method.IsPublic);
 
             return 1 - visibleMethodsCount / (double)allClassMethods.Count;
         }
@@ -121,13 +122,13 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassMethods = classType
                     .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)//Ignoring methods inherited from object & getters/setters
+                    .Where(method => method.DeclaringType != typeof(object) && !method.IsSpecialName)//Ignoring methods inherited from object & getters/setters
                     .ToList();
 
                 allClassesMethodsCount += allClassMethods.Count;
 
                 var visibleMethodsCount = allClassMethods
-                    .Count(m => m.IsPublic);
+                    .Count(method => method.IsPublic);
                 allVisibleMethodsCount += visibleMethodsCount;
             }
 
@@ -142,25 +143,25 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassProperties = classType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName)//Ignoring methods inherited from object
+                .Where(property => property.DeclaringType != typeof(object) && !property.IsSpecialName)//Ignoring methods inherited from object
                 .ToList();
 
             if (allClassProperties.Count == 0)
                 return 0;
 
             var inheritedPropertiesCount = allClassProperties
-                .Count(m => m.DeclaringType != classType);
+                .Count(property => property.DeclaringType != classType);
 
             var allClassFields = classType
                 .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(f => !f.Name.EndsWith("_BackingField"))
+                .Where(field => !field.Name.EndsWith(BackingFieldNameSuffix))
                 .ToList();
 
             if (allClassFields.Count == 0)
                 return 0;
 
             var inheritedFieldsCount = allClassFields
-                .Count(m => m.DeclaringType != classType);
+                .Count(field => field.DeclaringType != classType);
 
             return (inheritedPropertiesCount + inheritedFieldsCount) / (double)(allClassProperties.Count + allClassFields.Count);
 
@@ -177,23 +178,23 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassProperties = classType
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
-                                !m.IsSpecialName)
+                    .Where(property => property.DeclaringType != typeof(object) &&  //Ignoring methods inherited from object & getters/setters
+                                       !property.IsSpecialName)
                     .ToList();
 
                 var inheritedPropertyCount = allClassProperties
-                    .Count(m => m.DeclaringType != classType);
+                    .Count(property => property.DeclaringType != classType);
 
                 allClassesAttributeCount += allClassProperties.Count;
                 allInheritedAttributeCount += inheritedPropertyCount; 
                 
                 var allClassFields = classType
                     .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(f => !f.Name.EndsWith("_BackingField"))
+                    .Where(field => !field.Name.EndsWith(BackingFieldNameSuffix))
                     .ToList();
 
                 var inheritedFieldsCount = allClassFields
-                    .Count(m => m.DeclaringType != classType);
+                    .Count(field => field.DeclaringType != classType);
 
                 allClassesAttributeCount += allClassFields.Count;
                 allInheritedAttributeCount += inheritedFieldsCount;
@@ -210,7 +211,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassDefinedProperties = classType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(p => !p.IsSpecialName && p.DeclaringType == classType)
+                .Where(property => !property.IsSpecialName && property.DeclaringType == classType)
                 .ToList();
 
             var hiddenAttributesCount = 0;
@@ -226,11 +227,11 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassDefinedFields = classType
                 .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(f => !f.Name.EndsWith("_BackingField") && f.DeclaringType == classType)
+                .Where(field => !field.Name.EndsWith(BackingFieldNameSuffix) && field.DeclaringType == classType)
                 .ToList();
 
             var hiddenFieldsCount = allClassDefinedFields
-                .Count(f => !f.IsPublic);
+                .Count(field => !field.IsPublic);
             hiddenAttributesCount += hiddenFieldsCount;
 
             var allAttributesCount = allClassDefinedProperties.Count + allClassDefinedFields.Count;
@@ -250,7 +251,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassDefinedProperties = classType
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(p =>  !p.IsSpecialName && p.DeclaringType == classType)
+                    .Where(property => !property.IsSpecialName && property.DeclaringType == classType)
                     .ToList();
 
                 allClassesAttributesCount += allClassDefinedProperties.Count;
@@ -259,20 +260,20 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
                     var propertyGetterIsPublic = property.GetMethod?.IsPublic ?? false;
                     var propertySetterIsPublic = property.SetMethod?.IsPublic ?? false;
 
-                    // Assuming that eother the setter or getter being public is enough for public visibility
+                    // Assuming that either the setter or getter being public is enough for public visibility
                     if (!propertyGetterIsPublic && !propertySetterIsPublic)
                         allHiddenAttributesCount++;
                 }
 
                 var allClassDefinedFields = classType
                     .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(f => !f.Name.EndsWith("_BackingField") && f.DeclaringType == classType)
+                    .Where(field => !field.Name.EndsWith(BackingFieldNameSuffix) && field.DeclaringType == classType)
                     .ToList();
 
                 allClassesAttributesCount += allClassDefinedFields.Count;
 
                 var hiddenFieldsCount = allClassDefinedFields
-                    .Count(f => !f.IsPublic);
+                    .Count(field => !field.IsPublic);
                 allHiddenAttributesCount += hiddenFieldsCount;
             }
 
@@ -287,8 +288,8 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 
             var allClassMethods = classType
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName && //Ignoring methods inherited from object & getters/setters
-                            (m.IsPublic || (!m.IsPublic && !m.IsPrivate))) //Forcing to only retrieve the overridable methods - public and protected
+                .Where(method => method.DeclaringType != typeof(object) && !method.IsSpecialName && //Ignoring methods inherited from object & getters/setters
+                                 (method.IsPublic || (!method.IsPublic && !method.IsPrivate))) //Forcing to only retrieve the overridable methods - public and protected
                 .ToList();
 
             double newMethodCount = 0;
@@ -320,8 +321,8 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             {
                 var allClassMethods = classType
                     .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(m => m.DeclaringType != typeof(object) && !m.IsSpecialName && //Ignoring methods inherited from object & getters/setters
-                                (m.IsPublic || (!m.IsPublic && !m.IsPrivate))) //Forcing to only retrieve the overridable methods - public and protected
+                    .Where(method => method.DeclaringType != typeof(object) && !method.IsSpecialName && //Ignoring methods inherited from object & getters/setters
+                                     (method.IsPublic || (!method.IsPublic && !method.IsPrivate))) //Forcing to only retrieve the overridable methods - public and protected
                         .ToList();
                 double newMethodCount = 0;
                 foreach (var method in allClassMethods)
@@ -346,7 +347,7 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
             var depthOfInheritance = 1;
             var currentClass = classType;
 
-            while (currentClass.BaseType!.Name != "Object")
+            while (currentClass.BaseType!.Name != nameof(Object))
             {
                 depthOfInheritance++;
                 currentClass = currentClass.BaseType;
@@ -356,8 +357,8 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
         }
 
         private int CalculateDescendantClassesCount(Type classType, IReadOnlyCollection<Type> allClasses) =>
-            allClasses.Count(c =>
-                classType.IsAssignableFrom(c) &&
-                c.Name != classType.Name);
+            allClasses.Count(type =>
+                classType.IsAssignableFrom(type) &&
+                type.Name != classType.Name);
     }
 }

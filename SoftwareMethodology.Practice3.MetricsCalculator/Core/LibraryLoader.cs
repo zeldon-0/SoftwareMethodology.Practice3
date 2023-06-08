@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
 {
@@ -20,14 +15,14 @@ namespace SoftwareMethodology.Practice3.MetricsCalculator.Core
         {
             return _exampleProjectAssembly
                 .GetTypes()
-                .FirstOrDefault(t => t.Name == name);
+                .FirstOrDefault(type => type.Name == name);
         }
 
         public IReadOnlyCollection<Type> GetAllTypes()
         {
             return _exampleProjectAssembly
                 .GetTypes()
-                .Where(c => c.BaseType?.Name != "Attribute") // Excluding the three default attribute types
+                .Where(type => type.BaseType?.Name != "Attribute") // Excluding the three default attribute types
                 .ToList();
         }
 
